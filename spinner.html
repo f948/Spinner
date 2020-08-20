@@ -1,0 +1,226 @@
+<html>
+	<head>
+		<style>
+			canvas{
+				   border  : 1px solid black;
+				  }
+		</style>
+
+		<canvas id="canvas" width="500" height = "500"></canvas>
+		<br>
+		<input type="button" value="Start" id="start"onclick="start()">
+		<input type="button" value="Stop" onclick="stop()">
+		<input type="button" value="Change Background" onclick="changeImageBackground()">
+		<input type="button" value="Set Default" onclick="setDefault()">
+	</head>
+   <body>   
+		<script>
+			
+			// global variables 
+			var spinHandRadians=3*Math.PI/2;
+			var spinHand=null;
+			var spinEvent;
+			var source,background="default";
+			var image = new Image(500,500);
+			
+			// global constants 
+			const canvas = document.getElementById("canvas");
+			const context = canvas.getContext('2d');
+			const startBtn = document.getElementById("start");
+			
+			// class creates hand for spinner 
+			class Hand{
+			
+				constructor(centerX,centerY,endX,endY,length,color){
+				
+					this._centerX=centerX;
+					this._centerY=centerY;
+					this._endX=endX;
+					this._endY=endY;
+					this._length=length;
+					this._color=color;
+					
+				}
+				
+				set centerX(newCenterX){
+					this._centerX=newCenterX;
+				
+				}
+				
+				get centerX(){
+				
+					return this._centerX;
+				
+				}
+				
+				set centerY(newCenterY){
+					this._centerY=newCenterY;
+				
+				}
+				
+				get centerY(){
+				
+					return this._centerY;
+				
+				}
+				
+				set endX(newEndX){
+					this._endX=newEndX;
+				
+				}
+				
+				get endX(){
+				
+					return this._endX;
+				
+				}
+				
+				set endY(newEndY){
+					this._endY=newEndY;
+				
+				}
+				
+				get endY(){
+				
+					return this._endY;
+				
+				}
+				
+				set length(newLength){
+					this._length=newLength;
+				
+				}
+				
+				get length(){
+				
+					return this._length;
+				
+				}
+				
+				set color(newColor){
+					this._color=newColor;
+				
+				}
+				
+				get color(){
+				
+					return this._color;
+				
+				}
+				
+				
+			}
+			
+			function init(){
+			
+				// create spinner hand
+				spinHand = new Hand(250,250,250,20,210,"black");
+				
+				// draw default spinner background 
+			
+				// draw red quadrant 
+				context.fillStyle="red";
+				context.fillRect(0,0,250,250);
+					
+				// draw blue quadrant 
+				context.fillStyle="blue";
+				context.fillRect(250,0,250,250);
+					
+				// draw green quadrant 
+				context.fillStyle="green";
+				context.fillRect(0,250,250,250);
+					
+				// draw yellow quadrant 
+				context.fillStyle="yellow";
+				context.fillRect(250,250,250,250);
+					
+				// draw spinner 
+				spin();
+			}
+			
+			function spin(){
+				
+				// update board
+				context.clearRect(0,0,canvas.width,canvas.height);
+				
+				// draw background image if the user chooses an image
+				if(background == "image"){
+					context.drawImage(image,0,0,canvas.width,canvas.height);
+				}
+				
+				// draw spinner background by default
+				else if(background == "default"){
+				
+					// draw red quadrant 
+					context.fillStyle="red";
+					context.fillRect(0,0,250,250);
+					
+					// draw blue quadrant 
+					context.fillStyle="blue";
+					context.fillRect(250,0,250,250);
+					
+					// draw green quadrant 
+					context.fillStyle="green";
+					context.fillRect(0,250,250,250);
+					
+					// draw yellow quadrant 
+					context.fillStyle="yellow";
+					context.fillRect(250,250,250,250);
+				}
+				
+				// draw spinner hand 
+				context.beginPath();
+				context.lineWidth=5;
+				context.strokeStyle=spinHand.color;
+				context.moveTo(spinHand.centerX,spinHand.centerY);
+				context.lineTo(spinHand.endX,spinHand.endY);
+				context.stroke();
+				
+				// recalculate spinner hand position
+				spinHandRadians+=2*Math.PI/60;
+				spinHand.endX=spinHand.length*Math.cos(spinHandRadians)+250;
+				spinHand.endY=spinHand.length*Math.sin(spinHandRadians)+250;
+				
+				// draw center 
+				context.fillStyle="black";
+				context.arc(250,250,20,0,2*Math.PI);
+				context.fill();
+			}
+			
+			function start(){
+				
+				// spin the spinner as long as stop button is not pressed
+				spinEvent=setInterval(spin,1);
+				startBtn.disabled=true;
+			}
+			
+			function stop(){
+				
+				// stop spinning spinner when stop button is pressed
+				clearInterval(spinEvent);
+				startBtn.disabled=false;
+			}
+			
+			function changeImageBackground(){
+				
+				// get spinner background image source
+				source=prompt("Enter the source of the image of the spinner");
+				image.src=source;
+				background="image";
+				
+			}
+			
+			
+			function setDefault(){
+			
+				// change to default background
+				background="default";
+			
+			}
+			
+			
+			window.onload=init;
+			
+		</script>
+	</body>
+</html>
